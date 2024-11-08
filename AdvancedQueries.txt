@@ -28,3 +28,44 @@ FROM INVENTORY
 LEFT JOIN RENTALS R ON INVENTORY.ItemID = R.ItemID
 GROUP BY INVENTORY.Name
 ORDER BY RentalCount DESC;
+
+-- m. Provide a list of the drones in the database and the total number of miles flown, sorted from the ones that have been delivered the highest number of items to the ones delivered the lowest.
+SELECT DRONES.DroneID, DRONES.Model, SUM(SHIPMENTS.Distance) AS TotalMiles, COUNT(SHIPMENTS.DeliveryID) AS DeliveriesCount
+FROM DRONES
+LEFT JOIN SHIPMENTS ON DRONES.DroneID = SHIPMENTS.DroneID
+GROUP BY DRONES.DroneID, DRONES.Model
+ORDER BY DeliveriesCount DESC;
+
+--p. Provide the names and phones of members who have rented out anything by the most demanded
+equipment in the database.
+SELECT MEMBERS.FName, MEMBERS.LName, MEMBERS.PhoneNumber
+FROM MEMBERS
+JOIN RENTALS ON MEMBERS.MemberID = RENTALS.MemberID
+JOIN INVENTORY ON RENTALS.ItemID = INVENTORY.ItemID
+WHERE INVENTORY.ItemID = (
+SELECT ItemID
+FROM RENTALS
+GROUP BY ItemID
+ORDER BY COUNT(*) DESC
+LIMIT 1
+);
+
+-- q. Provide a list of manufacturers who provided the items rented out by members who have rented more items than the average customer.
+SELECT MANUFACTURER.Name
+FROM MANUFACTURER
+JOIN INVENTORY ON MANUFACTURER.ManufacturerID = INVENTORY.ManufacturerID
+JOIN RENTALS ON INVENTORY.ItemID = RENTALS.ItemID
+JOIN MEMBERS ON RENTALS.MemberID = MEMBERS.MemberID
+WHERE (
+    SELECT COUNT(*)
+    FROM RENTALS
+    WHERE RENTALS.MemberID = MEMBERS.MemberID
+) > (
+    SELECT AVG(RentalCount)
+    FROM (
+    SELECT COUNT(*) AS RentalCount
+    FROM RENTALS
+    GROUP BY MemberID
+    ) AS AvgRentals
+);
+
