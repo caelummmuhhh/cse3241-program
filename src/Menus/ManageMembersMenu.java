@@ -1,14 +1,17 @@
 package Menus;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import java.util.Date;
-import java.util.Random;
 
 import Entities.MemberEntity;
 import Helpers.InputVerifier;
 import Helpers.PrintHelpers;
 import Models.MemberModel;
+import Database.DatabaseManager;
+import Database.MembersSQL;
 
 public class ManageMembersMenu {
     private static ArrayList<String> menuOptions = new ArrayList<String>() {
@@ -23,14 +26,14 @@ public class ManageMembersMenu {
     };
 
     private Scanner scanner;
-
+    private Connection con;
     // TODO: delete. Temp for checkpoint 2, generate random data...
     private MemberEntity memberEntity;
 
     public ManageMembersMenu(Scanner scanner) {
         this.scanner = scanner;
         memberEntity = new MemberEntity();
-
+        this.con = DatabaseManager.CON;
         // TODO: delete, generates data
         memberEntity.add(new MemberModel(1, "John", "Doe", "123 Main St", "555-1234", "john.doe@example.com",
                 new Date(), "Active"));
@@ -82,7 +85,6 @@ public class ManageMembersMenu {
     }
 
     private void addMember() {
-        int memberId = (new Random()).nextInt(Integer.MAX_VALUE);
         Date startDate = new Date();
         String memberStatus = "Active";
 
@@ -103,8 +105,10 @@ public class ManageMembersMenu {
         System.out.print("Enter member email: ");
         String email = scanner.nextLine();
 
+        int memberId = MembersSQL.GetNextMemberID(con);
         MemberModel newMember = new MemberModel(memberId, fname, lname, address, phone, email, startDate, memberStatus);
-        memberEntity.add(newMember);
+
+        MembersSQL.AddMemberRecord(con, newMember);
 
         System.out.println("\nAdded the following member: ");
         printMember(newMember);
@@ -114,7 +118,7 @@ public class ManageMembersMenu {
         PrintHelpers.printHeader("Search for Member");
 
         int id = InputVerifier.getValidIntegerInput(scanner, "Enter ID to search for: ", 0, Integer.MAX_VALUE);
-        MemberModel member = memberEntity.findById(id);
+        MemberModel member = MembersSQL.GetMemberByID(con, id);
 
         if (member == null) {
             System.out.println("Could not find member with ID: " + id);
@@ -128,7 +132,7 @@ public class ManageMembersMenu {
         PrintHelpers.printHeader("Check Member Status");
 
         int id = InputVerifier.getValidIntegerInput(scanner, "Enter Member ID: ", 0, Integer.MAX_VALUE);
-        MemberModel member = memberEntity.findById(id);
+        MemberModel member = MembersSQL.GetMemberByID(con, id);
 
         if (member == null) {
             System.out.println("Could not find member with ID: " + id);
@@ -142,7 +146,7 @@ public class ManageMembersMenu {
         PrintHelpers.printHeader("Edit Member");
 
         int id = InputVerifier.getValidIntegerInput(scanner, "Enter Member ID: ", 0, Integer.MAX_VALUE);
-        MemberModel member = memberEntity.findById(id);
+        MemberModel member = MembersSQL.GetMemberByID(con, id);
 
         if (member == null) {
             System.out.println("Could not find member with ID: " + id);
@@ -151,22 +155,37 @@ public class ManageMembersMenu {
 
         printMember(member);
 
-        System.out.print("\nEnter new member first name: ");
-        member.FName = scanner.nextLine();
+        System.out.print("\nEnter new member first (leave blank to not edit): ");
+        String FName = scanner.nextLine();
+        if (!FName.trim().isEmpty()) {
+            member.FName = FName;
+        }
 
-        System.out.print("Enter new member last name: ");
-        member.LName = scanner.nextLine();
+        System.out.print("Enter new member last name (leave blank to not edit): ");
+        String LName = scanner.nextLine();
+        if (!LName.trim().isEmpty()) {
+            member.LName = LName;
+        }
 
-        System.out.print("Enter new member address: ");
-        member.Address = scanner.nextLine();
+        System.out.print("Enter new member address (leave blank to not edit): ");
+        String Address = scanner.nextLine();
+        if (!Address.trim().isEmpty()) {
+            member.Address = Address;
+        }
 
-        System.out.print("Enter new member phone number: ");
-        member.PhoneNumber = scanner.nextLine();
+        System.out.print("Enter new member phone number (leave blank to not edit): ");
+        String PhoneNumber = scanner.nextLine();
+        if (!PhoneNumber.trim().isEmpty()) {
+            member.PhoneNumber = PhoneNumber;
+        }
 
-        System.out.print("Enter new member email: ");
-        member.Email = scanner.nextLine();
-
-        memberEntity.update(member);
+        System.out.print("Enter new member email (leave blank to not edit): ");
+        String Email = scanner.nextLine();
+        if (!Email.trim().isEmpty()) {
+            member.Email = Email;
+        }
+        
+        MembersSQL.UpdateExistingMember(con, member);
 
         System.out.println("\nUpdated Member: ");
         printMember(member);

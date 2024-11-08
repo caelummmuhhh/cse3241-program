@@ -16,7 +16,8 @@ public class QueryManager {
             for (int i = 0; i < params.length; i++) {
                 ps.setString(i + 1, params[i]);
             }
-            return query(con, ps);
+            ResultSet rs = query(con, ps);
+            return rs;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -26,8 +27,6 @@ public class QueryManager {
     public static ResultSet query(Connection con, PreparedStatement sql) {
         try {
         	ResultSet rs = sql.executeQuery();
-        	rs.close();
-        	sql.close();
             return rs;
         } catch (SQLException e) {
             System.out.println(e.getMessage());

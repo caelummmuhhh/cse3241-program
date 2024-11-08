@@ -39,6 +39,7 @@ public class DatabaseManager {
             System.out.println(e.getMessage());
             System.out.println("There was a problem connecting to the database.");
         }
+        CON = conn;
         return conn;
     }
 
