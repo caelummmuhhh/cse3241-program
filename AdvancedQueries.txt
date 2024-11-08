@@ -45,17 +45,19 @@ ORDER BY TotalRentedTime Desc;
 
 --p. Provide the names and phones of members who have rented out anything by the most demanded
 equipment in the database.
-SELECT MEMBERS.FName, MEMBERS.LName, MEMBERS.PhoneNumber
+SELECT MEMBERS.FName, MEMBERS.LName, MEMBERS.PhoneNumber, INVENTORY.Name AS ItemName
 FROM MEMBERS
 JOIN RENTALS ON MEMBERS.MemberID = RENTALS.MemberID
 JOIN INVENTORY ON RENTALS.ItemID = INVENTORY.ItemID
-WHERE INVENTORY.ItemID = (
-SELECT ItemID
-FROM RENTALS
-GROUP BY ItemID
+WHERE INVENTORY.Name = (
+SELECT Name
+FROM INVENTORY
+JOIN RENTALS ON INVENTORY.ItemID = RENTALS.ItemID
+GROUP BY INVENTORY.Name
 ORDER BY COUNT(*) DESC
 LIMIT 1
 );
+
 
 -- q. Provide a list of manufacturers who provided the items rented out by members who have rented more items than the average customer.
 SELECT MANUFACTURER.Name
