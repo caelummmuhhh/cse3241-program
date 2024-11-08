@@ -36,7 +36,16 @@ LEFT JOIN SHIPMENTS ON DRONES.DroneID = SHIPMENTS.DroneID
 GROUP BY DRONES.DroneID, DRONES.Model
 ORDER BY DeliveriesCount DESC;
 
--- n. Find the most used items in the database, use the running rented time of the item to calculate and provide also the number of times the item has been rented out. The output should be ordered from the highest running rented time to the lowest.
+-- n. Find the most popular manufacturer in the database (i.e. the one who has had the most rented items)
+
+SELECT m.ManufacturerID,m.Name AS ManufacturerName,COUNT(r.RentalID) AS TotalRentals
+FROM RENTALS r
+JOIN INVENTORY inv ON r.ItemID = inv.ItemID
+JOIN MANUFACTURER m ON inv.ManufacturerID = m.ManufacturerID
+GROUP BY m.ManufacturerID, m.Name
+LIMIT 1;
+
+-- o. Find the most used items in the database, use the running rented time of the item to calculate and provide also the number of times the item has been rented out. The output should be ordered from the highest running rented time to the lowest.
 SELECT inv.ItemID, inv.Name, COUNT(r.RentalID)AS TimesRented, SUM(DATEDIFF(r.EndDt, r.StartDt)) AS TotalRentedTime
 FROM RENTALS r
 JOIN INVENTORY inv ON r.ItemID = inv.ItemID
