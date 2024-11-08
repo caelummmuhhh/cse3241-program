@@ -36,6 +36,13 @@ LEFT JOIN SHIPMENTS ON DRONES.DroneID = SHIPMENTS.DroneID
 GROUP BY DRONES.DroneID, DRONES.Model
 ORDER BY DeliveriesCount DESC;
 
+-- n. Find the most used items in the database, use the running rented time of the item to calculate and provide also the number of times the item has been rented out. The output should be ordered from the highest running rented time to the lowest.
+SELECT inv.ItemID, inv.Name, COUNT(r.RentalID)AS TimesRented, SUM(DATEDIFF(r.EndDt, r.StartDt)) AS TotalRentedTime
+FROM RENTALS r
+JOIN INVENTORY inv ON r.ItemID = inv.ItemID
+GROUP BY inv.ItemID, i.Name
+ORDER BY TotalRentedTime Desc;
+
 --p. Provide the names and phones of members who have rented out anything by the most demanded
 equipment in the database.
 SELECT MEMBERS.FName, MEMBERS.LName, MEMBERS.PhoneNumber
