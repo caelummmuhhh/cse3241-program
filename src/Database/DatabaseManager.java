@@ -1,11 +1,12 @@
 package Database;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseManager {
-    public static String DB_PATH_STR = "db/Project.db";
+    public static String DB_PATH_STR = Paths.get("db", "Project.db").toString();
     public static Connection CON = null;
 
     /**

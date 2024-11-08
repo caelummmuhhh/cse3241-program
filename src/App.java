@@ -6,7 +6,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         DatabaseManager.initializeDB(DatabaseManager.DB_PATH_STR);
-        
+        System.out.println("\n");
         run();
     }
 
