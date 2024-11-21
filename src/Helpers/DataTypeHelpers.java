@@ -28,7 +28,6 @@ public class DataTypeHelpers {
             SimpleDateFormat sdf = new SimpleDateFormat(pattern);
             return sdf.parse(dateString);
         } catch (Exception e) {
-            System.out.println("Error parsing date: " + e.getMessage());
             return null;
         }
     }

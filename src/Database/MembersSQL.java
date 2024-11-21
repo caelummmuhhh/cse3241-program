@@ -29,7 +29,13 @@ public class MembersSQL {
         }
     }
 
-
+    /**
+     * Retrieve member by member ID
+     * 
+     * @param con - the connection to the database
+     * @param searchId - the ID to search for
+     * @return - found member if any
+     */
     public static MemberModel GetMemberByID(Connection con, int searchId) {
         String sql = "SELECT * FROM MEMBERS WHERE MemberID = ?";
         ResultSet rs = QueryManager.query(con, sql, new String[] {String.valueOf(searchId)});
@@ -49,12 +55,17 @@ public class MembersSQL {
             return member;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            System.out.println("ERROR Retrieving from database... aborting!");
-            System.exit(-1);
+            System.out.println("ERROR Retrieving from database...");
         }
         return null;
     }
 
+    /**
+     * Retrieves the next member ID from the database, one that doesn't have a member occupying it.
+     * 
+     * @param con - the connection to the database
+     * @return the next member ID (>=0), returns (<0) if error
+     */
     public static int GetNextMemberID(Connection con) {
         String sql = "SELECT COALESCE(MAX(MemberID), 0) + 1 AS NextID FROM MEMBERS;";
         ResultSet rs = QueryManager.query(con, sql, new String[0]);
@@ -65,8 +76,8 @@ public class MembersSQL {
             rs.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            System.out.println("ERROR Retrieving from database... aborting!");
-            System.exit(-1);
+            System.out.println("ERROR Retrieving from database...");
+            return -1;
         }
         return memberId;
     }

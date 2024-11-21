@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 import java.util.Date;
 
-import Entities.MemberEntity;
 import Helpers.InputVerifier;
 import Helpers.PrintHelpers;
 import Models.MemberModel;
@@ -27,26 +26,10 @@ public class ManageMembersMenu {
 
     private Scanner scanner;
     private Connection con;
-    // TODO: delete. Temp for checkpoint 2, generate random data...
-    private MemberEntity memberEntity;
 
     public ManageMembersMenu(Scanner scanner) {
         this.scanner = scanner;
-        memberEntity = new MemberEntity();
         this.con = DatabaseManager.CON;
-        // TODO: delete, generates data
-        memberEntity.add(new MemberModel(1, "John", "Doe", "123 Main St", "555-1234", "john.doe@example.com",
-                new Date(), "Active"));
-        memberEntity.add(new MemberModel(2, "Jane", "Smith", "456 Oak St", "555-5678", "jane.smith@example.com",
-                new Date(), "Active"));
-        memberEntity.add(new MemberModel(3, "Alex", "Johnson", "789 Pine St", "555-8765", "alex.johnson@example.com",
-                new Date(), "Active"));
-        memberEntity.add(new MemberModel(4, "Emily", "Davis", "321 Birch St", "555-4321", "emily.davis@example.com",
-                new Date(), "Active"));
-        memberEntity.add(new MemberModel(5, "Michael", "Brown", "654 Cedar St", "555-9876", "michael.brown@example.com",
-                new Date(), "Active"));
-        memberEntity.add(new MemberModel(6, "Sarah", "Wilson", "987 Elm St", "555-3456", "sarah.wilson@example.com",
-                new Date(), "Active"));
     }
 
     public void prompt() {

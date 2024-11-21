@@ -70,14 +70,7 @@ public class MainMenu {
                 break;
 
                 case 7: // Rent Item
-                System.out.print("\nEnter the item you wish to rent: ");
-                int rentItemId = scanner.nextInt();
-                scanner.nextLine();
-                System.out.print("Enter your name: ");
-                scanner.nextLine();
-                System.out.print("Enter rental duration (in days): ");
-                int rentalDuration = scanner.nextInt();
-                System.out.printf("You have rented item #%d for %d days.\n\n", rentItemId, rentalDuration);
+                CustomerMenu.PromptRentItem(scanner);
                 break;
 
             case 8: // Return Item
@@ -108,7 +101,7 @@ public class MainMenu {
                 break;
 
             case 11: // Useful Reports
-                System.out.println("\nUseful reports has not been implemented yet...\n");
+                new UsefulReportsMenu(scanner).prompt();
                 break;
                 
             case 12: // Clear output

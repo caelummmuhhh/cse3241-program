@@ -20,7 +20,6 @@ HAVING COUNT(*) > (
 );
 
 
-
 -- l. Provide a list of the equipment in the database and associated total copies rented to members,
 --    sorted from the equipment that has been rented the most to the equipment that has been rented the least.
 SELECT INVENTORY.Name, COALESCE(COUNT(R.RENTALID), 0) AS RentalCount
@@ -37,7 +36,6 @@ GROUP BY DRONES.DroneID, DRONES.Model
 ORDER BY DeliveriesCount DESC;
 
 -- n. Find the most popular manufacturer in the database (i.e. the one who has had the most rented items)
-
 SELECT m.ManufacturerID,m.Name AS ManufacturerName,COUNT(r.RentalID) AS TotalRentals
 FROM RENTALS r
 JOIN INVENTORY inv ON r.ItemID = inv.ItemID

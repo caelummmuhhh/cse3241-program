@@ -1,5 +1,7 @@
 package Helpers;
 
+import java.util.Date;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class InputVerifier {
@@ -56,6 +58,64 @@ public class InputVerifier {
             }
 
             return intInput;
+        }
+    }
+
+    /**
+     * Get a valid integer input with valid values.
+     * 
+     * @param scanner - the scanner to read values from
+     * @param prompt - the prompt to the entity (user) to read the integer from
+     * @param validValues - a list of valid values, if user enters int not in list, keep prompting
+     * @return - the user inputted valid value.
+     */
+    public static int getValidIntegerInput(Scanner scanner, String prompt, ArrayList<Integer> validValues) {
+        while (true) {
+            System.out.print(prompt);
+            if (!scanner.hasNextInt()) {
+                String input = scanner.nextLine();
+                System.out.println(
+                        "Unknown option: \"" + input + "\"\n" +
+                                "Please enter a number...\n");
+                continue;
+            }
+
+            int intInput = scanner.nextInt();
+            if (validValues.contains(intInput)) {
+                System.out.println(
+                        "Unknown option: \"" + intInput + "\"\n" +
+                                "Value outside of valid domain. ");
+                continue;
+            }
+            
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
+            }
+
+            return intInput;
+        }
+    }
+    
+    public static Date promptValidDate(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String userInp = scanner.nextLine();
+            if (userInp.trim().isEmpty()) {
+                System.out.println("Please enter a valid date with the format yyyy-mm-dd (e.g. 2022-02-22).\n");
+                continue;
+            }
+
+            Date parsedDate = DataTypeHelpers.parseDateString(userInp);
+            if (parsedDate == null) {
+                System.out.println("Please enter a valid date with the format yyyy-mm-dd (e.g. 2022-02-22).\n");
+                continue;
+            }
+
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
+            }
+
+            return parsedDate;
         }
     }
 }
