@@ -1,13 +1,16 @@
 package Menus;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Random;
 
-import Entities.InventoryEntity;
+import Database.DatabaseManager;
+import Database.InventorySQL;
+import Database.ManufacturerSQL;
+import Database.WarehouseSQL;
 import Helpers.InputVerifier;
 import Helpers.PrintHelpers;
-import Models.InventoryModel;
+import Models.EquipmentModel;
 
 public class ManageInventoryMenu {
     private static ArrayList<String> menuOptions = new ArrayList<String>() {
@@ -21,26 +24,11 @@ public class ManageInventoryMenu {
     };
 
     private Scanner scanner;
-
-    // TODO: delete. Temp for checkpoint 2, generate random data...
-    private InventoryEntity inventoryEntity;
+    private Connection con;
 
     public ManageInventoryMenu(Scanner scanner) {
         this.scanner = scanner;
-        inventoryEntity = new InventoryEntity();
-
-        // TODO: delete, generates data
-        inventoryEntity.add(new InventoryModel(1, "Projector", "Medium", "Black", 101, 201));
-        inventoryEntity.add(new InventoryModel(2, "Lawn Mower", "Standard", "Green", 102, 202));
-        inventoryEntity.add(new InventoryModel(3, "Camping Tent", "4-Person", "Orange", 103, 203));
-        inventoryEntity.add(new InventoryModel(4, "Bicycle", "Mountain", "Red", 104, 204));
-        inventoryEntity.add(new InventoryModel(5, "Power Drill", "Cordless", "Blue", 105, 205));
-        inventoryEntity.add(new InventoryModel(6, "Kayak", "Single", "Yellow", 106, 206));
-        inventoryEntity.add(new InventoryModel(7, "Audio System", "Portable", "Black", 107, 207));
-        inventoryEntity.add(new InventoryModel(8, "Snowboard", "All-Mountain", "White", 108, 208));
-        inventoryEntity.add(new InventoryModel(9, "Camera", "DSLR", "Black", 109, 209));
-        inventoryEntity.add(new InventoryModel(10, "Generator", "2000W", "Silver", 110, 210));
-                
+        this.con = DatabaseManager.CON;
     }
 
     public void prompt() {
@@ -80,24 +68,38 @@ public class ManageInventoryMenu {
 
     private void addItem() {
         PrintHelpers.printHeader("Add Item");
-        InventoryModel newItem = new InventoryModel();
-        newItem.ItemID = (new Random()).nextInt(Integer.MAX_VALUE);
+        EquipmentModel newItem = new EquipmentModel();
+        newItem.ItemID = InventorySQL.GetNextEquipmentID(con);
 
         System.out.print("Enter item name: ");
         newItem.Name = scanner.nextLine();
 
+        System.out.print("Enter equipment type: ");
+        newItem.Type = scanner.nextLine();
+
         System.out.print("Enter item size: ");
         newItem.Size = scanner.nextLine();
+
+        newItem.Weight = InputVerifier.getValidIntegerInput(scanner, "Enter weight: ", 0, Integer.MAX_VALUE);
 
         System.out.print("Enter color: ");
         newItem.Color = scanner.nextLine();
 
-        newItem.WarehouseID = InputVerifier.getValidIntegerInput(scanner, "Enter warehouse ID: ", 0, Integer.MAX_VALUE);
+        newItem.Weight = InputVerifier.getValidIntegerInput(scanner, "Enter year: ", 0, Integer.MAX_VALUE);
 
-        newItem.ManufacturerID = InputVerifier.getValidIntegerInput(scanner, "EntEnter manufacturer ID: ", 0,
-                Integer.MAX_VALUE);
+        System.out.println("\n");
+        WarehouseSQL.PrintAll(con);
+        System.out.println("\n");
+        newItem.WarehouseID = InputVerifier.getValidIntegerInput(scanner, "Please choose and enter warehouse ID: ",
+                WarehouseSQL.GetListOfAllIDs(con));
 
-        inventoryEntity.add(newItem);
+        System.out.println("\n");
+        ManufacturerSQL.PrintAll(con);
+        System.out.println("\n");
+        newItem.ManufacturerID = InputVerifier.getValidIntegerInput(scanner, "Please choose and enter manufacturer ID: ",
+                ManufacturerSQL.GetListOfAllIDs(con));
+
+        InventorySQL.AddEquipmentRecord(con, newItem);
 
         System.out.println("\nAdded the following item: ");
         printItem(newItem);
@@ -107,46 +109,51 @@ public class ManageInventoryMenu {
         PrintHelpers.printHeader("Search for Item");
 
         int id = InputVerifier.getValidIntegerInput(scanner, "Enter ID to search for: ", 0, Integer.MAX_VALUE);
-        InventoryModel item = inventoryEntity.findById(id);
+        EquipmentModel item = InventorySQL.GetEquipmentByID(con, id);
 
         if (item == null) {
-            System.out.println("Could not find item with ID: " + id);
+            System.out.println("Could not find equipment with ID: " + id);
             return;
         }
+
         System.out.println("Found Item:");
         printItem(item);
     }
 
     public void viewAllItems() {
-        System.out.printf("%-10s %-20s %-10s %-10s %-15s %-15s%n", "Item ID", "Name", "Size", "Color", "Warehouse ID",
-                "Manufacturer ID");
-        System.out.println("---------------------------------------------------------------------------------");
-
-        for (InventoryModel item : inventoryEntity.getAll()) {
-            System.out.printf("%-10d %-20s %-10s %-10s %-15d %-15d%n",
-                    item.ItemID, item.Name, item.Size, item.Color,
-                    item.WarehouseID, item.ManufacturerID);
-        }
+        InventorySQL.PrintAll(con);
     }
 
     private void removeItem() {
         PrintHelpers.printHeader("Remove Item");
 
         int id = InputVerifier.getValidIntegerInput(scanner, "Enter Item ID: ", 0, Integer.MAX_VALUE);
-        InventoryModel item = inventoryEntity.findById(id);
+        EquipmentModel item = InventorySQL.GetEquipmentByID(con, id);
+
+        if (item == null) {
+            System.out.println("Could not find equipment with ID: " + id);
+            return;
+        }
         printItem(item);
-        inventoryEntity.delete(item);
-        System.out.println("Deleted item...");
+        if (!InputVerifier.promptBoolean(scanner, "Delete item? (y/n): ")) {
+            System.out.println("Aborting...");
+            return;
+        }
+
+        InventorySQL.DeleteEquipment(con, id);
+        System.out.println("Deleted item.");
     }
 
-    private static void printItem(InventoryModel item) {
+    private static void printItem(EquipmentModel item) {
         System.out.println(
-            "\tItem ID: " + item.ItemID + "\n" +
-            "\tName: : " + item.Name + "\n" +
-            "\tSize: " + item.Size + "\n" +
-            "\tColor: : " + item.Color + "\n" +
-            "\tWarehouse ID: : " + item.WarehouseID + "\n" +
-            "\tManufacturer ID: : " + item.ManufacturerID
-        );
+                "\tItem ID: " + item.ItemID + "\n" +
+                        "\tName: " + item.Name + "\n" +
+                        "\tType: " + item.Type + "\n" +
+                        "\tSize: " + item.Size + "\n" +
+                        "\tWeight: " + item.Weight + "\n" +
+                        "\tColor: " + item.Color + "\n" +
+                        "\tYear: " + item.Year + "\n" +
+                        "\tWarehouse ID: " + item.WarehouseID + "\n" +
+                        "\tManufacturer ID: " + item.ManufacturerID);
     }
 }

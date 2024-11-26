@@ -40,6 +40,10 @@ public class MembersSQL {
         String sql = "SELECT * FROM MEMBERS WHERE MemberID = ?";
         ResultSet rs = QueryManager.query(con, sql, new String[] {String.valueOf(searchId)});
         try {
+            if (!rs.isBeforeFirst()) {
+                // nothing was found
+                return null;
+            }
             rs.next();
             MemberModel member = new MemberModel(
                 rs.getInt(1),
@@ -99,7 +103,5 @@ public class MembersSQL {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
-
     }
 }

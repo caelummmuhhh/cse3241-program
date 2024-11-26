@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class InputVerifier {
+    /**
+     * Determines if a string is an integer.
+     * 
+     * @param str - the string to check
+     * @return whether or not the string is an integer
+     */
     public static boolean isInteger(String str) {
         if (str == null) {
             return false;
@@ -33,6 +39,15 @@ public class InputVerifier {
         return true;
     }
 
+    /**
+     * Get a valid integer input with an allowable valid range.
+     * 
+     * @param scanner - the scanner to read values from
+     * @param prompt - the prompt to the entity (user) to read the integer from
+     * @param min - the minimum value allowed, inclusive
+     * @param max - the maximum value allowed, inclusive
+     * @return - the user inputted valid value.
+     */
     public static int getValidIntegerInput(Scanner scanner, String prompt, int min, int max) {
         while (true) {
             System.out.print(prompt);
@@ -81,7 +96,7 @@ public class InputVerifier {
             }
 
             int intInput = scanner.nextInt();
-            if (validValues.contains(intInput)) {
+            if (!validValues.contains(intInput)) {
                 System.out.println(
                         "Unknown option: \"" + intInput + "\"\n" +
                                 "Value outside of valid domain. ");
@@ -96,6 +111,13 @@ public class InputVerifier {
         }
     }
     
+    /**
+     * Prompts the user for a date until a valid response.
+     * 
+     * @param scanner - the scanner to read values from
+     * @param prompt - the prompt to the entity (user) to read the date from
+     * @return the user inputted valid date
+     */
     public static Date promptValidDate(Scanner scanner, String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -116,6 +138,29 @@ public class InputVerifier {
             }
 
             return parsedDate;
+        }
+    }
+
+    /**
+     * Prompts the user for a boolean value (yes or no) until valid response.
+     * 
+     * @param scanner  - the scanner to read values from
+     * @param prompt - the prompt to the entity (user) to read the boolean from
+     * @return the user inputed value
+     */
+    public static boolean promptBoolean(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String userInp = scanner.nextLine();
+            userInp = userInp.toLowerCase();
+            if (userInp.startsWith("y")) {
+                return true;
+            }
+            if (userInp.startsWith("n")) {
+                return false;
+            }
+
+            System.out.println("Please enter a valid value (y/n).");
         }
     }
 }

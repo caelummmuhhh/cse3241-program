@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.management.Query;
-
 public class CustomerSQL {
     public static void PrintAvailableItems(Connection con) {
         String sql = "SELECT I.ItemID EquipmentID, I.Name Equipment, I.Type, I.Color, I.Year, M.Name ManufacturerName\n" +

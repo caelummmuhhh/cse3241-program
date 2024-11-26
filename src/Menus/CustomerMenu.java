@@ -26,7 +26,7 @@ public class CustomerMenu {
         ArrayList<Integer> availableItemIds = CustomerSQL.GetAvailableItemsIDs(DatabaseManager.CON);
         System.err.println();
 
-        int id = InputVerifier.getValidIntegerInput(
+        int equipmentId = InputVerifier.getValidIntegerInput(
             scanner,
             "Choose an Equipment ID from the table above to rent: ",
             availableItemIds
@@ -38,7 +38,7 @@ public class CustomerMenu {
         Random random = new Random();
         int fee = random.nextInt(10000 - 10 + 1) + 10;
 
-        
+        System.out.println("Renting ");
     }
 
     public static void PromptReturnItem() {
