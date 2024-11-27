@@ -80,12 +80,12 @@ public class MainMenu {
                 break;
 
             case 9: // Delivery of Item
-                CustomerMenu.PromptItemDelivery();
+                CustomerMenu.PromptItemDelivery(scanner);
                 System.out.println("");
                 break;
 
             case 10: // Pickup of Item
-                CustomerMenu.PromptItemPickupForReturn();
+                CustomerMenu.PromptItemPickupForReturn(scanner);
                 System.out.println("");
                 break;
 

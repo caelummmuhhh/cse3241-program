@@ -10,6 +10,7 @@ import Database.DatabaseManager;
 import Database.InventorySQL;
 import Database.MembersSQL;
 import Database.RentalsSQL;
+import Database.ShipmentsSQL;
 import Helpers.DataTypeHelpers;
 import Helpers.InputVerifier;
 import Helpers.PrintHelpers;
@@ -117,12 +118,82 @@ public class CustomerMenu {
     }
 
 
-    public static void PromptItemDelivery() {
+    public static void PromptItemDelivery(Scanner scanner) {
+        PrintHelpers.printHeader("Item Delivery");
+        Connection con = DatabaseManager.CON;
+        // Get member
+        MemberModel member = GetMemberPrompt(scanner);
+        if (member == null) {
+            return;
+        }
 
+        ArrayList<Integer> undeliveredRentalIds = RentalsSQL.GetNotDeliveredRentalIDs(con, member.MemberID);
+        if (undeliveredRentalIds.size() <= 0) {
+            System.out.println("There are no rentals with undelivered equipment.");
+            return;
+        }
+
+        System.out.println("");
+        RentalsSQL.PrintNotDeliveredRentals(con, member.MemberID);
+        System.out.println("");
+        int rentalId = InputVerifier.getValidIntegerInput(
+            scanner,
+            "Enter rental ID you wish to have equipment delivered: ",
+            undeliveredRentalIds
+        );
+        EquipmentModel item = InventorySQL.GetEquipmentFromRentalID(con, rentalId);
+
+        PrintHelpers.printItem(item);
+        if (!InputVerifier.promptBoolean(scanner, "Deliver Item? (y/n): ")) {
+            System.out.println("Cancelling...");
+            return;
+        }
+        System.out.print("\nEnter the address to pick up: ");
+        String deliveryAddr = scanner.nextLine();
+
+        boolean success = ShipmentsSQL.CreateShipment(con, rentalId, new Date(), "Delivery", deliveryAddr);
+        if (success) {
+            System.out.println("Successfully scheduled delivery for your rental of" + item.Name + "!");
+        }
     }
 
-    public static void PromptItemPickupForReturn() {
+    public static void PromptItemPickupForReturn(Scanner scanner) {
+        PrintHelpers.printHeader("Item Return Pick Up");
+        Connection con = DatabaseManager.CON;
+        // Get member
+        MemberModel member = GetMemberPrompt(scanner);
+        if (member == null) {
+            return;
+        }
 
+        ArrayList<Integer> pickupRentalIds = RentalsSQL.GetNotPickedUpReturnRentalIDs(con, member.MemberID);
+        if (pickupRentalIds.size() <= 0) {
+            System.out.println("There are no rental returns with equipments that needs pick up.");
+            return;
+        }
+
+        System.out.println("");
+        RentalsSQL.PrintNotPickedUpReturnRentals(con, member.MemberID);
+        System.out.println("");
+        int rentalId = InputVerifier.getValidIntegerInput(
+            scanner,
+            "Enter returned rental ID you wish to have equipment picked up: ",
+            pickupRentalIds
+        );
+        EquipmentModel item = InventorySQL.GetEquipmentFromRentalID(con, rentalId);
+
+        PrintHelpers.printItem(item);
+        if (!InputVerifier.promptBoolean(scanner, "Pick up returned item? (y/n): ")) {
+            System.out.println("Cancelling...");
+            return;
+        }
+        System.out.print("\nEnter the address to pick up: ");
+        String deliveryAddr = scanner.nextLine();    
+
+        boolean success = ShipmentsSQL.CreateShipment(con, rentalId, new Date(), "Return", deliveryAddr);
+        if (success) {
+            System.out.println("Successfully scheduled pickup for your return of" + item.Name + "!");
+        }
     }
 
     private static MemberModel GetMemberPrompt(Scanner scanner) {

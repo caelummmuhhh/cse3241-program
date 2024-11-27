@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Helpers.DataTypeHelpers;
-import Models.EquipmentModel;
 
 public class RentalsSQL {
     /**
@@ -217,6 +216,74 @@ public class RentalsSQL {
                         "    GROUP BY RentalID\n" + //
                         "    HAVING COUNT(*) = 1\n" + //
                         ");";
+        ArrayList<Integer> ids = new ArrayList<>();
+        try {
+            ResultSet rs = QueryManager.query(con, sql, new String[] { Integer.toString(memberId) });
+            while (rs.next()) {
+                ids.addLast(rs.getInt(1));
+            }
+            rs.close();
+        }
+        catch (SQLException err) {
+            System.out.println(err.getMessage());
+            return null;
+        }
+        return ids;
+    }
+
+    public static void PrintNotPickedUpReturnRentals(Connection con, int memberId) {
+        String sql = "SELECT R.RentalID, StartDt, EndDt, I.Name EquipmentName, I.Type EquipmentType\n" + //
+                        "FROM RENTALS R\n" + //
+                        "JOIN INVENTORY I ON I.ItemID = R.ItemID\n" + //
+                        "WHERE R.MemberID = ? AND R.RentalID NOT IN (\n" + //
+                        "    SELECT RentalID\n" + //
+                        "    FROM SHIPMENTS\n" + //
+                        "    WHERE Type = 'Return'\n" + //
+                        ");";
+        QueryManager.queryAndPrint(con, sql, new String[] { Integer.toString(memberId) });
+    }
+
+    public static ArrayList<Integer> GetNotPickedUpReturnRentalIDs(Connection con, int memberId) {
+        String sql = "SELECT RentalID\n" + //
+                        "FROM RENTALS\n" + //
+                        "WHERE MemberID = ? AND RentalID NOT IN (\n" + //
+                        "    SELECT RentalID\n" + //
+                        "    FROM SHIPMENTS\n" + //
+                        "    WHERE Type = 'Return'\n" + //
+                        ")\n";
+        ArrayList<Integer> ids = new ArrayList<>();
+        try {
+            ResultSet rs = QueryManager.query(con, sql, new String[] { Integer.toString(memberId) });
+            while (rs.next()) {
+                ids.addLast(rs.getInt(1));
+            }
+            rs.close();
+        }
+        catch (SQLException err) {
+            System.out.println(err.getMessage());
+            return null;
+        }
+        return ids;
+    }
+
+    public static void PrintNotDeliveredRentals(Connection con, int memberId) {
+        String sql = "SELECT R.RentalID, StartDt, EndDt, I.Name EquipmentName, I.Type EquipmentType\n" + //
+                        "FROM RENTALS R\n" + //
+                        "JOIN INVENTORY I ON I.ItemID = R.ItemID\n" + //
+                        "WHERE R.MemberID = ? AND R.RentalID NOT IN (\n" + //
+                        "    SELECT RentalID\n" + //
+                        "    FROM SHIPMENTS\n" + //
+                        ");";
+        QueryManager.queryAndPrint(con, sql, new String[] { Integer.toString(memberId) });
+    }
+
+    public static ArrayList<Integer> GetNotDeliveredRentalIDs(Connection con, int memberId) {
+        String sql = "SELECT RentalID\n" + //
+                        "FROM RENTALS\n" + //
+                        "WHERE MemberID = ? AND RentalID NOT IN (\n" + //
+                        "    SELECT RentalID\n" + //
+                        "    FROM SHIPMENTS\n" + //
+                        ");\n";
         ArrayList<Integer> ids = new ArrayList<>();
         try {
             ResultSet rs = QueryManager.query(con, sql, new String[] { Integer.toString(memberId) });

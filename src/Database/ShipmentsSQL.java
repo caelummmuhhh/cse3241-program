@@ -1,7 +1,12 @@
 package Database;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
+
+import Helpers.DataTypeHelpers;
 
 public class ShipmentsSQL {
     /**
@@ -24,5 +29,32 @@ public class ShipmentsSQL {
             return -1;
         }
         return shipmentId;
+    }
+
+    public static boolean CreateShipment(Connection con, int rentalId, Date deliveryDt, String shipmentType, String address) {
+        String sql = "INSERT INTO SHIPMENTS (DeliveryID, RentalID, EstDeliveryDt, Status, Address, DroneID, Type, Distance)\n"
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        int deliveryId = ShipmentsSQL.GetNextShipmentID(con);
+        int droneId = DataTypeHelpers.getRandomInt(DronesSQL.GetListOfAllIDs(con));
+        int distance = DataTypeHelpers.getRandomInt(0, 100);
+        String shipmenStatus = "Processing";
+
+        try {
+            PreparedStatement shipmentPs = con.prepareStatement(sql);
+            shipmentPs.setInt(1, deliveryId);
+            shipmentPs.setInt(2, rentalId);
+            shipmentPs.setString(3, DataTypeHelpers.convertToDateOnlyISO(deliveryDt));
+            shipmentPs.setString(4, shipmenStatus);
+            shipmentPs.setString(5, address);
+            shipmentPs.setInt(6, droneId);
+            shipmentPs.setString(7, shipmentType);
+            shipmentPs.setInt(8, distance);
+
+            shipmentPs.executeUpdate();
+            return true;
+        } catch (SQLException err) {
+            System.out.println("Error creating shipment. Aborting...");
+        }
+        return false;
     }
 }

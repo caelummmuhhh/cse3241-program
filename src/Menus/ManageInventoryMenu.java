@@ -102,7 +102,7 @@ public class ManageInventoryMenu {
         InventorySQL.AddEquipmentRecord(con, newItem);
 
         System.out.println("\nAdded the following item: ");
-        printItem(newItem);
+        PrintHelpers.printItem(newItem);
     }
 
     private void searchItem() {
@@ -117,7 +117,7 @@ public class ManageInventoryMenu {
         }
 
         System.out.println("Found Item:");
-        printItem(item);
+        PrintHelpers.printItem(item);
     }
 
     public void viewAllItems() {
@@ -134,7 +134,7 @@ public class ManageInventoryMenu {
             System.out.println("Could not find equipment with ID: " + id);
             return;
         }
-        printItem(item);
+        PrintHelpers.printItem(item);
         if (!InputVerifier.promptBoolean(scanner, "Delete item? (y/n): ")) {
             System.out.println("Aborting...");
             return;
@@ -142,18 +142,5 @@ public class ManageInventoryMenu {
 
         InventorySQL.DeleteEquipment(con, id);
         System.out.println("Deleted item.");
-    }
-
-    private static void printItem(EquipmentModel item) {
-        System.out.println(
-                "\tItem ID: " + item.ItemID + "\n" +
-                        "\tName: " + item.Name + "\n" +
-                        "\tType: " + item.Type + "\n" +
-                        "\tSize: " + item.Size + "\n" +
-                        "\tWeight: " + item.Weight + "\n" +
-                        "\tColor: " + item.Color + "\n" +
-                        "\tYear: " + item.Year + "\n" +
-                        "\tWarehouse ID: " + item.WarehouseID + "\n" +
-                        "\tManufacturer ID: " + item.ManufacturerID);
     }
 }
