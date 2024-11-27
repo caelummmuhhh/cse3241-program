@@ -71,6 +71,7 @@ public class MainMenu {
 
                 case 7: // Rent Item
                 CustomerMenu.PromptRentItem(scanner);
+                System.out.println("");
                 break;
 
             case 8: // Return Item

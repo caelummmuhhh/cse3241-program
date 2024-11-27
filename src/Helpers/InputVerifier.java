@@ -133,10 +133,6 @@ public class InputVerifier {
                 continue;
             }
 
-            if (scanner.hasNextLine()) {
-                scanner.nextLine();
-            }
-
             return parsedDate;
         }
     }

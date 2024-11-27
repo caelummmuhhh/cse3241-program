@@ -1,6 +1,8 @@
 package Helpers;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -31,4 +33,16 @@ public class DataTypeHelpers {
             return null;
         }
     }
+
+    public static int getRandomInt(ArrayList<Integer> validValues) {
+        Random rand = new Random();
+        int randIndex = rand.nextInt(validValues.size());
+        return validValues.get(randIndex);
+    }
+
+    public static int getRandomInt(int min, int max) {
+        Random rand = new Random();
+        return rand.nextInt(min, max+1);
+    }
+
 }
