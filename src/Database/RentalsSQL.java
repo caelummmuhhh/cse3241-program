@@ -9,8 +9,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Helpers.DataTypeHelpers;
+import Models.EquipmentModel;
 
 public class RentalsSQL {
+    /**
+     * Create a rental WITH delivery.
+     * 
+     * @param con - connection to database
+     * @param itemId - item to rent
+     * @param memberId - id of member that is renting
+     * @param startDt - start date of rental
+     * @param endDt - estimated end date of rental
+     * @param fee - the fee for the item rental
+     * @param deliveryAddr - the address to deliver to
+     * @return whether or not the rental and delivery creation was successful
+     */
     public static boolean CreateRental(Connection con, int itemId, int memberId, Date startDt,
             Date endDt, int fee, String deliveryAddr) {
         String rentalSql = "INSERT INTO RENTALS (RentalID, ItemID, MemberID, StartDt, EndDt, Fee)\n" +
@@ -64,6 +77,49 @@ public class RentalsSQL {
     }
 
 
+    /**
+     * Making rental WITHOUT delivery
+     * 
+     * @param con - connection to database
+     * @param itemId - item to rent
+     * @param memberId - id of member that is renting
+     * @param startDt - start date of rental
+     * @param endDt - estimated end date of rental
+     * @param fee - the fee for the item rental
+     * @return whether or not the rental creation was a success
+     */
+    public static boolean CreateRental(Connection con, int itemId, int memberId, Date startDt,
+            Date endDt, int fee) {
+        String rentalSql = "INSERT INTO RENTALS (RentalID, ItemID, MemberID, StartDt, EndDt, Fee)\n" +
+                "VALUES (?, ?, ?, ?, ?, ?);";
+        int rentalId = GetNextRentalID(con);
+
+        try {
+            PreparedStatement rentalPs = con.prepareStatement(rentalSql);
+            rentalPs.setInt(1, rentalId);
+            rentalPs.setInt(2, itemId);
+            rentalPs.setInt(3, memberId);
+            rentalPs.setString(4, DataTypeHelpers.convertToDateOnlyISO(startDt));
+            rentalPs.setString(5, DataTypeHelpers.convertToDateOnlyISO(endDt));
+            rentalPs.setInt(6, fee);
+
+            rentalPs.executeUpdate();
+            return true;
+        } catch (SQLException err) {
+            System.out.println("Error processing rental. Aborting...");
+        }
+        return false;
+    }
+
+    /**
+     * Return rental WITH pick up.
+     * 
+     * @param con - connection to database
+     * @param memberId - id of member that the rental belongs to
+     * @param rentalId - rental id to return
+     * @param pickUpAddr - address where item will be picked up from
+     * @return whether or not the return and pick up creation was successful
+     */
     public static boolean ReturnRental(Connection con, int memberId, int rentalId, String pickUpAddr) {
         int deliveryId = ShipmentsSQL.GetNextShipmentID(con);
         int droneId = DataTypeHelpers.getRandomInt(DronesSQL.GetListOfAllIDs(con));
@@ -109,6 +165,32 @@ public class RentalsSQL {
         }
         return false;
     }
+
+    /**
+     * Return rental WITHOUT pickup.
+     * 
+     * @param con - connection to database
+     * @param memberId - id of member that the rental belongs to
+     * @param rentalId - rental id to return
+     * @return whether or not the return was successful
+     */
+    public static boolean ReturnRental(Connection con, int memberId, int rentalId) {
+        Date newEndDt = new Date();
+
+        String updateRentalSql = "UPDATE RENTALS SET EndDt = ? WHERE RentalID = ?;";
+
+        try {
+            PreparedStatement rentalPs = con.prepareStatement(updateRentalSql);
+            rentalPs.setString(1, DataTypeHelpers.convertToDateOnlyISO(newEndDt));
+            rentalPs.setInt(2, rentalId);
+            rentalPs.executeUpdate();
+            return true;
+        } catch (SQLException err) {
+            System.out.println("Error returning rental. Aborting...");
+        }
+        return false;
+    }
+
 
     public static void PrintActiveRentalEquipments(Connection con, int memberId) {
         String sql = "SELECT r.RentalID, i.Name AS Equipment, r.StartDt AS CheckoutDate\n" + //

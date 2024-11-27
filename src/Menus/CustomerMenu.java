@@ -58,15 +58,21 @@ public class CustomerMenu {
             System.out.println("Cancelling...");
             return;
         }
-
-        System.out.print("\nEnter the delivery address: ");
-        String deliveryAddr = scanner.nextLine();
-
-        boolean success = RentalsSQL.CreateRental(con, equipmentId, member.MemberID, startDt, endDt, fee, deliveryAddr);
+        boolean success = false;
+        if (InputVerifier.promptBoolean(scanner, "Set delivery right now? This can be set later. (y/n): ")) {
+            System.out.print("\nEnter the delivery address: ");
+            String deliveryAddr = scanner.nextLine();
+    
+            success = RentalsSQL.CreateRental(con, equipmentId, member.MemberID, startDt, endDt, fee, deliveryAddr);
+        } else {
+            success = RentalsSQL.CreateRental(con, equipmentId, member.MemberID, startDt, endDt, fee);
+        }
+        
         if (success) {
             System.out.println("Successfully rented " + item.Name + "!");
         }
     }
+
 
     public static void PromptReturnItem(Scanner scanner) {
         PrintHelpers.printHeader("Return Rental");
@@ -87,20 +93,29 @@ public class CustomerMenu {
         System.out.println("");
         int returnRentalId = InputVerifier.getValidIntegerInput(scanner, "Enter rental ID you wish to return: ",
                 activeRentalIds);
-        EquipmentModel item = InventorySQL.GetEquipmentByID(con, returnRentalId);
+        EquipmentModel item = InventorySQL.GetEquipmentFromRentalID(con, returnRentalId);
         if (!InputVerifier.promptBoolean(scanner, "Return Item? (y/n): ")) {
             System.out.println("Cancelling...");
             return;
         }
-        System.out.print("\nEnter the address to pick up delivery: ");
-        String deliveryAddr = scanner.nextLine();
 
-        boolean success = RentalsSQL.ReturnRental(con, member.MemberID, returnRentalId, deliveryAddr);
+        boolean success = false;
+
+        if (InputVerifier.promptBoolean(scanner, "Set up return item pick up right now? This can be set later. (y/n): ")) {
+            System.out.print("\nEnter the address to pick up: ");
+            String deliveryAddr = scanner.nextLine();    
+            success = RentalsSQL.ReturnRental(con, member.MemberID, returnRentalId, deliveryAddr);
+        }
+        else {
+            success = RentalsSQL.ReturnRental(con, member.MemberID, returnRentalId);
+        }
+        
         if (success) {
             System.out.println("Successfully created return for Rental #" + returnRentalId + " (" + item.Name + ")");
             System.out.println("Please anticipate drone's arrival to retrieve the returned item.");
         }
     }
+
 
     public static void PromptItemDelivery() {
 

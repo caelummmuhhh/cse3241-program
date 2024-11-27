@@ -126,4 +126,20 @@ public class InventorySQL {
         String sql = "SELECT * FROM INVENTORY;";
         QueryManager.queryAndPrint(con, sql, new String[0]);
     }
+
+    public static EquipmentModel GetEquipmentFromRentalID(Connection con, int rentalId) {
+        String getItemIdSql = "SELECT ItemID FROM RENTALS WHERE RentalID = ?;";
+        ResultSet rs = QueryManager.query(con, getItemIdSql, new String[] { Integer.toString(rentalId) });
+        int itemId = -1;
+        try {
+            rs.next();
+            itemId = rs.getInt(1);
+            rs.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("ERROR Retrieving from database...");
+            return null;
+        }
+        return GetEquipmentByID(con, itemId);
+    }
 }
