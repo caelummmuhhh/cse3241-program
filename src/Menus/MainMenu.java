@@ -19,10 +19,10 @@ public class MainMenu {
 
             add("7. Rent Item (implemented)");
             add("8. Return Item (implemented)");
-            add("9. Delivery of Item (partially implemented)");
-            add("10. Pickup of Item (partially implemented)\n");
+            add("9. Delivery of Item (implemented)");
+            add("10. Pickup of Item (implemented)\n");
 
-            add("11. Useful Reports\n");
+            add("11. Useful Reports (implemented)\n");
 
             add("12. Clear Outputs");
             add("13. Exit Program");
