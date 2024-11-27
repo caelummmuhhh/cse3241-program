@@ -17,8 +17,8 @@ public class MainMenu {
             add("5. Manage Shipments");
             add("6. Manage Payments\n");
 
-            add("7. Rent Item (partially implemented)");
-            add("8. Return Item (partially implemented)");
+            add("7. Rent Item (implemented)");
+            add("8. Return Item (implemented)");
             add("9. Delivery of Item (partially implemented)");
             add("10. Pickup of Item (partially implemented)\n");
 
@@ -75,30 +75,18 @@ public class MainMenu {
                 break;
 
             case 8: // Return Item
-                System.out.print("\nEnter the item ID you wish to return: ");
-                int returnItemId = scanner.nextInt();
-                scanner.nextLine();
-                System.out.print("Enter your name: ");
-                String returnerName = scanner.nextLine();
-                System.out.printf("Return process for item #%d has was started by %s.\n\n", returnItemId, returnerName);
+                CustomerMenu.PromptReturnItem(scanner);
+                System.out.println("");
                 break;
 
             case 9: // Delivery of Item
-                System.out.print("\nEnter the item ID for delivery: ");
-                int deliveryItemId = scanner.nextInt();
-                scanner.nextLine();
-                System.out.print("Enter delivery address: ");
-                String deliveryAddress = scanner.nextLine();
-                System.out.printf("Item #%d will be delivered to %s.\n\n", deliveryItemId, deliveryAddress);
+                CustomerMenu.PromptItemDelivery();
+                System.out.println("");
                 break;
 
             case 10: // Pickup of Item
-                System.out.print("\nEnter the item ID for pickup: ");
-                int pickupItemId = scanner.nextInt();
-                scanner.nextLine();
-                System.out.print("Enter your name: ");
-                String pickerName = scanner.nextLine();
-                System.out.printf("Item #%d will be picked up by %s.\n\n", pickupItemId, pickerName);
+                CustomerMenu.PromptItemPickupForReturn();
+                System.out.println("");
                 break;
 
             case 11: // Useful Reports
